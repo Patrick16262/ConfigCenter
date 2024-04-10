@@ -1,0 +1,9 @@
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: Deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      id-type: auto
+  configuration:
+    map-underscore-to-camel-case: false
