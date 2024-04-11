@@ -9,6 +9,7 @@ import site.patrickshao.admin.common.constants.CommonStrings;
 import site.patrickshao.admin.common.constants.SignConstants;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,10 @@ import java.util.Map;
 public final class StringUtils {
     private static final Splitter SEMICOLON_SPLITTER = Splitter.on(SignConstants.SEMICOLON).trimResults().omitEmptyStrings();
     private static final Splitter EQUAL_SPLITTER = Splitter.on(SignConstants.EQUAL).trimResults().omitEmptyStrings();
+    private static final Splitter COMMA_SPLITTER = Splitter.on(SignConstants.COMMA).trimResults().omitEmptyStrings();
     private static final Joiner SEMICOLON_JOINER = Joiner.on(SignConstants.SEMICOLON).skipNulls();
     private static final Joiner EQUAL_JOINER = Joiner.on(SignConstants.EQUAL).useForNull(CommonStrings.NULL);
+    private static final Joiner COMMA_JOINER = Joiner.on(SignConstants.COMMA).skipNulls();
 
     private StringUtils() {
     }
@@ -57,4 +60,15 @@ public final class StringUtils {
         return SEMICOLON_JOINER.join(arguments.entrySet().stream()
                 .map(entry -> EQUAL_JOINER.join(entry.getKey(), entry.getValue())).toList());
     }
-}
+
+    public static @NotNull List<String> splitByComma(String string) {
+        return COMMA_SPLITTER.splitToList(string);
+    }
+
+    public static String concatByComma(List<String> stringList) {
+        if (stringList.isEmpty()) {
+            return "";
+        }
+        return COMMA_JOINER.join(stringList);
+    }
+ }

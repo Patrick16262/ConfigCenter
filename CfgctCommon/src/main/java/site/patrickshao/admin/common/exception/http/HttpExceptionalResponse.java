@@ -1,4 +1,4 @@
-package site.patrickshao.admin.common.exception;
+package site.patrickshao.admin.common.exception.http;
 
 /**
  * @author Shao Yibo
@@ -25,5 +25,9 @@ public class HttpExceptionalResponse extends RuntimeException {
      */
     public HttpExceptionalResponse(String message) {
         super(message);
+    }
+
+    public static void onConditionThrow(boolean condition, HttpExceptionalResponse e) {
+        throw e;
     }
 }

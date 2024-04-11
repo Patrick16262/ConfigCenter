@@ -1,7 +1,6 @@
 package site.patrickshao.admin.common.utils;
 
 import site.patrickshao.admin.common.exception.IllegalDataRelationException;
-import site.patrickshao.admin.common.exception.RuntimeErrors;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
@@ -30,7 +29,7 @@ import java.util.Objects;
 
 
 @ParametersAreNonnullByDefault
-public final class RuntimeExceptions {
+public final class Throwables {
 
     /**
      * 检查调用者类是否为指定类
@@ -46,12 +45,12 @@ public final class RuntimeExceptions {
 
     public static <T> void checkCallerClass(Class<T> clazz, String message) {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-        RuntimeExceptions.throwOnCondition(elements.length < 4).badCaller("This method should be called in a method.");
+        Throwables.throwOnCondition(elements.length < 4).badCaller("This method should be called in a method.");
         Class<?> callerClazz = null;
         try {
             callerClazz = Class.forName(elements[2].getClassName());
         } catch (ClassNotFoundException e) {
-            RuntimeErrors.emit("Class not found.");
+            throw new RuntimeException(e);
         }
         Objects.requireNonNull(callerClazz);
         if (!clazz.isAssignableFrom(callerClazz)) {

@@ -1,0 +1,20 @@
+{
+  "createItems": [
+    {
+      "namespaceId": 3,
+      "key": "test1key1",
+      "type": 0,
+      "value": "test2key2",
+      "lineNum": 1,
+      "id": 3,
+      "isDeleted": false,
+      "deletedAt": 0,
+      "dataChangeCreatedBy": "apollo",
+      "dataChangeCreatedTime": "2024-04-07 20:35:26",
+      "dataChangeLastModifiedBy": "apollo",
+      "dataChangeLastModifiedTime": "2024-04-07 20:35:26"
+    }
+  ],
+  "updateItems": [],
+  "deleteItems": []
+}

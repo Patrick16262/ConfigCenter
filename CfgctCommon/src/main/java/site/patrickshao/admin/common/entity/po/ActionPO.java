@@ -1,9 +1,12 @@
 package site.patrickshao.admin.common.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 
 import java.util.Objects;
+
+import static site.patrickshao.admin.common.constants.DataBaseFields.ActionPO.ACTION_NAME;
 
 /**
  * @author Shao Yibo
@@ -13,7 +16,7 @@ import java.util.Objects;
 @TableName("`Action`")
 @GenerateRepository
 public class ActionPO extends AbstractPersistObject {
-
+    @TableField(ACTION_NAME)
     private String actionName;
     private Boolean checkApplicationPermission;
     private Boolean checkNamespacePermission;

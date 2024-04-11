@@ -1,9 +1,13 @@
 package site.patrickshao.admin.common.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
+
+import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE_NAME;
 
 /**
  * @author Shao Yibo
@@ -13,7 +17,9 @@ import java.util.Objects;
 @TableName("`Role`")
 @GenerateRepository
 public class RolePO extends AbstractBasicFieldsObject {
+    @TableField(ROLE_NAME)
     private String roleName;
+    @Nullable
     private String parentRoleNames;
     private Boolean specifyApplication;
     private Boolean specifyNamespace;
@@ -27,11 +33,12 @@ public class RolePO extends AbstractBasicFieldsObject {
         this.roleName = roleName;
     }
 
+    @jakarta.annotation.Nullable
     public String getParentRoleNames() {
         return parentRoleNames;
     }
 
-    public void setParentRoleNames(String parentRoleNames) {
+    public void setParentRoleNames(@jakarta.annotation.Nullable String parentRoleNames) {
         this.parentRoleNames = parentRoleNames;
     }
 

@@ -4,6 +4,7 @@ package site.patrickshao.admin.biz.repository;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import site.patrickshao.admin.biz.utils.PersistUtils;
 import site.patrickshao.admin.common.constants.DataBaseFields;
@@ -11,7 +12,7 @@ import site.patrickshao.admin.common.entity.po.AbstractBasicFieldsObject;
 import site.patrickshao.admin.common.entity.po.AbstractFullFieldsObject;
 import site.patrickshao.admin.common.entity.po.AbstractPersistObject;
 import site.patrickshao.admin.common.utils.ReflectUtils;
-import site.patrickshao.admin.common.utils.RuntimeExceptions;
+import site.patrickshao.admin.common.utils.Throwables;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Instant;
@@ -42,17 +43,20 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         return mapper.selectById(id);
     }
 
+    @NotNull
     public List<T> selectByIds(List<Long> ids) {
         return mapper.selectBatchIds(ids);
     }
 
+    @NotNull
     public List<T> selectByWrapper(Wrapper<T> wrapper) {
         return mapper.selectList(wrapper);
     }
 
+    @NotNull
     public List<T> selectByPartition(T entity) {
         Wrapper<T> wrapper = PersistUtils.generatePartitionQueryWrapper(entity);
-        RuntimeExceptions.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
+        Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
 
         return selectByWrapper(wrapper);
     }
@@ -65,7 +69,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
     }
 
     public void updateById(Long id, T entity, String operator) {
-        RuntimeExceptions.throwOnNotNull(entity.getId());
+        Throwables.throwOnNotNull(entity.getId());
         entity.setId(id);
         processEntityBeforeUpdate(entity, operator);
 
@@ -73,7 +77,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
     }
 
     public void updateById(T entity, String operator) {
-        RuntimeExceptions.throwOnNull(entity.getId());
+        Throwables.throwOnNull(entity.getId());
         processEntityBeforeUpdate(entity, operator);
 
         mapper.updateById(entity);
@@ -81,7 +85,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
 
 
     public void updateByWrapper(Wrapper<T> wrapper, T entity, String operator) {
-        RuntimeExceptions.throwOnNull(entity.getId());
+        Throwables.throwOnNull(entity.getId());
         processEntityBeforeUpdate(entity, operator);
 
         mapper.update(entity, wrapper);
@@ -89,7 +93,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
 
     public void updateByPartition(T entity, String operator) {
         Wrapper<T> wrapper = PersistUtils.generatePartitionQueryWrapper(entity);
-        RuntimeExceptions.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
+        Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
         processEntityBeforeUpdate(entity, operator);
 
         mapper.update(entity, wrapper);
@@ -140,7 +144,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
 
     private void processEntityBeforeUpdate(T t, String operator) {
         if (t instanceof AbstractBasicFieldsObject object) {
-            RuntimeExceptions.throwOnNotNull(
+            Throwables.throwOnNotNull(
                     object.getCreatedBy(),
                     object.getCreateTime(),
                     object.getDeleted(),
@@ -148,7 +152,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
             );
         }
         if (t instanceof AbstractFullFieldsObject object) {
-            RuntimeExceptions.throwOnNotNull(
+            Throwables.throwOnNotNull(
                     object.getCreatedBy(),
                     object.getCreateTime()
             );
@@ -159,7 +163,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
 
     private void processEntityBeforeCreate(T t, String operator) {
         if (t instanceof AbstractBasicFieldsObject object) {
-            RuntimeExceptions.throwOnNotNull(
+            Throwables.throwOnNotNull(
                     object.getCreatedBy(),
                     object.getCreateTime(),
                     object.getDeleted(),
@@ -168,7 +172,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
             object.setCreateTime(Date.from(Instant.now()));
         }
         if (t instanceof AbstractFullFieldsObject object) {
-            RuntimeExceptions.throwOnNotNull(
+            Throwables.throwOnNotNull(
                     object.getCreatedBy(),
                     object.getCreateTime()
             );

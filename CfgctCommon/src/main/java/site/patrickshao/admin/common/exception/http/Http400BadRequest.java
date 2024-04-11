@@ -1,4 +1,4 @@
-package site.patrickshao.admin.common.exception;
+package site.patrickshao.admin.common.exception.http;
 
 /**
  * @author Shao Yibo

@@ -1,7 +1,6 @@
 package site.patrickshao.admin.common.utils;
 
 import jakarta.validation.constraints.NotNull;
-import site.patrickshao.admin.common.exception.RuntimeErrors;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.File;
@@ -48,7 +47,7 @@ public final class ReflectUtils {
     @NotNull
     public static <T> Class<T> getCurrentSuperClassGenericArgument() {
         StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-        RuntimeExceptions.throwOnCondition(elements.length < 3).badCaller("Illegal caller state");
+        Throwables.throwOnCondition(elements.length < 3).badCaller("Illegal caller state");
         Class<?> clazz = ReflectUtils.forName(elements[2].getClassName());
         ParameterizedType type = (ParameterizedType) clazz.getGenericSuperclass();
         Type[] types = type.getActualTypeArguments();
@@ -66,7 +65,7 @@ public final class ReflectUtils {
             field.setAccessible(true);
             return clazz.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
-            return RuntimeErrors.emit("Field not found.");
+            throw new RuntimeException(e);
         }
     }
 
@@ -117,7 +116,7 @@ public final class ReflectUtils {
                 fields.add(field);
             }
         }
-        RuntimeExceptions.throwOnCondition(fields.isEmpty(), new NoSuchFieldException());
+        Throwables.throwOnCondition(fields.isEmpty(), new NoSuchFieldException());
         return fields.toArray(new Field[0]);
     }
 

@@ -10,6 +10,8 @@ public interface DataBaseFields {
 
     interface ActionPO {
         String ACTION_NAME = "ActionName";
-
+    }
+    interface RolePO {
+        String ROLE_NAME = "RoleName";
     }
 }

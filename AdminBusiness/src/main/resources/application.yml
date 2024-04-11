@@ -3,3 +3,4 @@ spring:
     import:
       - classpath:mybatis.yml
       - classpath:datasource.yml
+      - classpath:logging.yml

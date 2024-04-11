@@ -1,17 +1,20 @@
 package site.patrickshao.admin.common.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import site.patrickshao.admin.common.entity.PojoWithIdentifier;
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import static site.patrickshao.admin.common.constants.DataBaseFields.ID;
 
 /**
  * @author Shao Yibo
  * @description
  * @date 2024/4/9
  */
-public abstract class AbstractPersistObject implements Serializable {
-    @TableId
+public abstract class AbstractPersistObject implements Serializable, PojoWithIdentifier {
+    @TableId(ID)
     private Long id;
 
     public Long getId() {
@@ -39,5 +42,13 @@ public abstract class AbstractPersistObject implements Serializable {
         return "BasePersistObject{" +
                 "id=" + id +
                 '}';
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public Long getPojoIdentifier() {
+        return id;
     }
 }
