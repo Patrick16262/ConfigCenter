@@ -3,7 +3,7 @@ package site.patrickshao.admin.common.entity.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
-import site.patrickshao.admin.common.annotation.PartitionField;
+import site.patrickshao.admin.common.annotation.ParentId;
 
 import java.util.Objects;
 
@@ -17,9 +17,9 @@ import java.util.Objects;
 public class BranchPO extends AbstractFullFieldsObject {
     @TableField("Name")
     private Long name;
-    @PartitionField
+    @ParentId(ClusterPO.class)
     private Long clusterId;
-    @PartitionField
+    @ParentId(NamespacePO.class)
     private Long namespaceId;
     private Long branchHead;
     private String branchType;

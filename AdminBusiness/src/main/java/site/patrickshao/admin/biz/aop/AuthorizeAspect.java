@@ -7,8 +7,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import site.patrickshao.admin.biz.annotation.PreAuthorize;
+import site.patrickshao.admin.biz.secure.AuthorizationContext;
 import site.patrickshao.admin.biz.service.AuthorizationService;
-import site.patrickshao.admin.common.entity.bo.AuthorizationContextBO;
 import site.patrickshao.admin.common.exception.InvalidAuthorizationContextException;
 import site.patrickshao.admin.common.exception.http.Http401Unauthorized;
 import site.patrickshao.admin.common.utils.ReflectUtils;
@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
 @Component
 @Aspect
 public class AuthorizeAspect {
-    private static final ThreadLocal<AuthorizationContextBO> AuthorizationContext = new ThreadLocal<>();
+
     @Autowired
     private AuthorizationService authorizationService;
 
@@ -35,17 +35,17 @@ public class AuthorizeAspect {
 
     @Before("pointcut()")
     public void validatePermission(JoinPoint joinPoint) {
-        Throwables.throwOnCondition(AuthorizationContext.get() == null, new InvalidAuthorizationContextException());
+        Throwables.throwOnCondition(AuthorizationContext.getUserId() == null, new InvalidAuthorizationContextException());
         Field field = ReflectUtils.getField(joinPoint.getTarget().getClass(),
                 joinPoint.getSignature().getName());
         String actionName = field.getAnnotation(PreAuthorize.class).value();
-        if (!authorizationService.checkPermission(AuthorizationContext.get())) {
+        if (!authorizationService.checkPermission()) {
             throw new Http401Unauthorized();
         }
     }
 
     public static void removeCurrentAuthorizationContext() {
-        AuthorizationContext.remove();
+        AuthorizationContext.destory();
     }
 
 }

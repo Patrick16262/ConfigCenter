@@ -2,7 +2,7 @@ package site.patrickshao.admin.common.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
-import site.patrickshao.admin.common.annotation.PartitionField;
+import site.patrickshao.admin.common.annotation.ParentId;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ import java.util.Objects;
 @TableName("`UserRole`")
 @GenerateRepository
 public class UserRolePO extends AbstractBasicFieldsObject {
-    @PartitionField
+    @ParentId
     private Long userId;
     private Long roleId;
     private Long namespaceSpecification;

@@ -13,6 +13,7 @@ import java.util.Objects;
  */
 public class AuthorizationContextBO implements Serializable, PojoWithIdentifier {
     private Long userId;
+    private String username;
     @Nullable
     private Long targetApplicationId;
     @Nullable
@@ -61,27 +62,12 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
     public void setActionName(String actionName) {
         this.actionName = actionName;
     }
-
-    @Override
-    public String toString() {
-        return "AuthorizationContextBO{" +
-                "userId=" + userId +
-                ", targetApplicationId=" + targetApplicationId +
-                ", targetNamespaceId=" + targetNamespaceId +
-                ", actionName='" + actionName + '\'' +
-                '}';
+    public String getUsername() {
+        return username;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof AuthorizationContextBO that)) return false;
-        return Objects.equals(userId, that.userId) && Objects.equals(targetApplicationId, that.targetApplicationId) && Objects.equals(targetNamespaceId, that.targetNamespaceId) && Objects.equals(actionName, that.actionName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, targetApplicationId, targetNamespaceId, actionName);
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**
@@ -90,5 +76,28 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
     @Override
     public Long getPojoIdentifier() {
         return userId;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof AuthorizationContextBO that)) return false;
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(targetApplicationId, that.targetApplicationId) && Objects.equals(targetNamespaceId, that.targetNamespaceId) && Objects.equals(actionName, that.actionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, targetApplicationId, targetNamespaceId, actionName);
+    }
+
+    @Override
+    public String toString() {
+        return "AuthorizationContextBO{" +
+                "userId=" + userId +
+                ", username='" + username + '\'' +
+                ", targetApplicationId=" + targetApplicationId +
+                ", targetNamespaceId=" + targetNamespaceId +
+                ", actionName='" + actionName + '\'' +
+                '}';
     }
 }

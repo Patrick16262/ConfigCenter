@@ -19,11 +19,8 @@ public class AuthorizationServiceTest {
     private AuthorizationService authorizationService;
     @Test
     public void test() {
-        AuthorizationContextBO authorizationContextBO = new AuthorizationContextBO();
-        authorizationContextBO.setUserId(1L);
-        authorizationContextBO.setTargetApplicationId(null);
-        authorizationContextBO.setActionName("Role#Create");
-        System.out.println(authorizationService.checkPermission(authorizationContextBO));
+
+//        System.out.println(authorizationService.checkPermission());
     }
 
 }

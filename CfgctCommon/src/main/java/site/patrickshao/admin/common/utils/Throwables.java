@@ -1,6 +1,7 @@
 package site.patrickshao.admin.common.utils;
 
 import site.patrickshao.admin.common.exception.IllegalDataRelationException;
+import site.patrickshao.admin.common.exception.http.Http400BadRequest;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Objects;
@@ -78,6 +79,7 @@ public final class Throwables {
             throw new RuntimeException(e);
         }
     }
+
     public static void throwOnNull(Object... NonNulObjects) {
         for (Object obj : NonNulObjects) {
             if (obj == null) throw new NullPointerException();
@@ -90,6 +92,17 @@ public final class Throwables {
         }
     }
 
+    public static void validateRequest(boolean condition) {
+        if (condition) {
+            throw new Http400BadRequest();
+        }
+    }
+
+    public static void validateRequest(boolean condition, String message) {
+        if (condition) {
+            throw new Http400BadRequest(message);
+        }
+    }
 
 
     public interface Thrower {
@@ -106,6 +119,7 @@ public final class Throwables {
         void badDataRelation(String message);
 
         void illegalArgument();
+
         void illegalArgument(String message);
 
     }

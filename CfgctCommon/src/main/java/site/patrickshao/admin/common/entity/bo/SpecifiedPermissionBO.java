@@ -1,19 +1,23 @@
 package site.patrickshao.admin.common.entity.bo;
 
 import site.patrickshao.admin.common.entity.PojoWithIdentifier;
+import site.patrickshao.admin.common.entity.po.PermissionPO;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * @author Shao Yibo
  * @description
- * @date 2024/4/10
+ * @date 2024/4/11
  */
-public class SpecifiedPermissionBO implements Serializable, PojoWithIdentifier {
+public class SpecifiedPermissionBO implements PojoWithIdentifier {
     private Long id;
-    private Long targetApplication;
-    private Long targetNamespace;
+    private String name;
+    private Long applicationId;
+    private Long namespaceId;
+
+    public SpecifiedPermissionBO() {
+    }
 
     public Long getId() {
         return id;
@@ -23,41 +27,50 @@ public class SpecifiedPermissionBO implements Serializable, PojoWithIdentifier {
         this.id = id;
     }
 
-    public Long getTargetApplication() {
-        return targetApplication;
+    public String getName() {
+        return name;
     }
 
-    public void setTargetApplication(Long targetApplication) {
-        this.targetApplication = targetApplication;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Long getTargetNamespace() {
-        return targetNamespace;
+    public Long getApplicationId() {
+        return applicationId;
     }
 
-    public void setTargetNamespace(Long targetNamespace) {
-        this.targetNamespace = targetNamespace;
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
     }
 
-    @Override
-    public boolean equals(Object object) {
-        if (this == object) return true;
-        if (!(object instanceof SpecifiedPermissionBO that)) return false;
-        return Objects.equals(id, that.id) && Objects.equals(targetApplication, that.targetApplication) && Objects.equals(targetNamespace, that.targetNamespace);
+    public Long getNamespaceId() {
+        return namespaceId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, targetApplication, targetNamespace);
+    public void setNamespaceId(Long namespaceId) {
+        this.namespaceId = namespaceId;
     }
 
     @Override
     public String toString() {
         return "SpecifiedPermissionBO{" +
                 "id=" + id +
-                ", targetApplication=" + targetApplication +
-                ", targetNamespace=" + targetNamespace +
+                ", name='" + name + '\'' +
+                ", applicationId=" + applicationId +
+                ", namespaceId=" + namespaceId +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof SpecifiedPermissionBO that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(applicationId, that.applicationId) && Objects.equals(namespaceId, that.namespaceId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, applicationId, namespaceId);
     }
 
     /**

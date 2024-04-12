@@ -1,30 +1,24 @@
 package site.patrickshao.admin.biz.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.patrickshao.admin.biz.repository.DefaultRepository;
-import site.patrickshao.admin.biz.utils.AuthorizationBusiness;
-import site.patrickshao.admin.biz.utils.AuthorizationUtils;
-import site.patrickshao.admin.common.constants.DataBaseFields;
-import site.patrickshao.admin.common.entity.bo.AuthorizationContextBO;
+import site.patrickshao.admin.biz.secure.AuthorizationContext;
+import site.patrickshao.admin.common.annotation.OnlyForService;
 import site.patrickshao.admin.common.entity.bo.SpecifiedPermissionBO;
+import site.patrickshao.admin.common.entity.dto.SpecifiedUserDTO;
 import site.patrickshao.admin.common.entity.po.*;
-import site.patrickshao.admin.common.exception.http.Http400BadRequest;
-import site.patrickshao.admin.common.utils.ArrayUtils;
-import site.patrickshao.admin.common.utils.StringUtils;
+import site.patrickshao.admin.common.utils.PojoUtils;
 import site.patrickshao.admin.common.utils.Throwables;
 
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
-import java.util.*;
-
-import static site.patrickshao.admin.biz.utils.AuthorizationUtils.convertToRolePermissionPOPartition;
-import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE_NAME;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author Shao Yibo
@@ -36,139 +30,136 @@ import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE
 @ParametersAreNonnullByDefault
 public class AuthorizationService {
     @Autowired
-    private DefaultRepository<UserPO> userRepository;
+    private ActionService actionService;
     @Autowired
-    private DefaultRepository<UserRolePO> userRoleRepository;
+    private UserService userService;
     @Autowired
-    private DefaultRepository<RolePO> roleRepository;
+    private RoleService roleService;
     @Autowired
-    private DefaultRepository<RolePermissionPO> rolePermissionRepository;
-    @Autowired
-    private DefaultRepository<PermissionPO> permissionRepository;
-    @Autowired
-    private DefaultRepository<ActionRequirePO> actionRequireRepository;
-    @Autowired
-    private DefaultRepository<ActionPO> actionRepository;
+    private PermissionService permissionService;
+
     private static final Logger log = LoggerFactory.getLogger(AuthorizationService.class);
 
     @Transactional
-    public boolean checkPermission(AuthorizationContextBO authorizationContext) {
-        ActionPO po = getActionPO(authorizationContext.getActionName());
-        Throwables.throwOnCondition(po == null, new Http400BadRequest("No such action"));
-        List<PermissionPO> requiredPermissions = getActionRequiredPermissionPO(po.getId());
-        List<SpecifiedPermissionBO> authorizedPermission = getPermissionByUser(authorizationContext.getUserId());
-        log.debug("get requiredPermissions: " + requiredPermissions);
-        log.debug("get authorizedPermission: " + authorizedPermission);
-        return AuthorizationBusiness
-                .checkIfPermissionSatisfied(
-                        authorizedPermission,
-                        requiredPermissions,
-                        authorizationContext.getTargetApplicationId(),
-                        authorizationContext.getTargetNamespaceId()
+    public boolean checkPermission() {
+        List<PermissionPO> requiredPermissions = actionService
+                .getPermissionByActionName(AuthorizationContext.getActionName());
+        Throwables.validateRequest(requiredPermissions == null, "No such action Name");
+        SpecifiedUserDTO specifiedUserDTO = userService.getUserDTO(AuthorizationContext.getUserId());
+        log.debug("get required permissions: " + requiredPermissions);
+        log.debug("get user details: " + specifiedUserDTO);
+        return checkIfPermissionSatisfied(
+                specifiedUserDTO,
+                requiredPermissions,
+                AuthorizationContext.getTargetApplicationId(),
+                AuthorizationContext.getTargetNamespaceId()
+        );
+    }
+
+
+    @Transactional
+    @OnlyForService
+    public boolean checkIfHavePermissionToAssignRole(Long userId, Long roleId,@Nullable Long applicationId,@Nullable Long namespaceId) {
+        List<PermissionPO> requiredList = roleService.getRoleAssignRequiredPermissions(roleId);
+        SpecifiedUserDTO user = userService.getUserDTO(userId);
+        return checkIfPermissionSatisfied(user, requiredList, applicationId, namespaceId);
+    }
+
+
+    private boolean checkIfPermissionSatisfied(
+            SpecifiedUserDTO specifiedUserDTO,
+            List<PermissionPO> requiredPermissions,
+            @Nullable Long applicationId,
+            @Nullable Long namespaceId) {
+        List<SpecifiedPermissionBO> authorizedPermissions = PojoUtils.getAllPermissionsDistinct(specifiedUserDTO);
+
+        //按Id排序权限
+        authorizedPermissions = new ArrayList<>(authorizedPermissions);
+        requiredPermissions = new ArrayList<>(requiredPermissions);
+        authorizedPermissions.sort(Comparator.comparing(SpecifiedPermissionBO::getId));
+        requiredPermissions.sort(Comparator.comparing(PermissionPO::getId));
+
+        //验证权限
+        int i = 0;
+        for (PermissionPO required : requiredPermissions) {
+            for (; i < authorizedPermissions.size() + 1; i++) {
+                if (i == authorizedPermissions.size()) {
+                    //认证失败
+                    return false;
+                }
+                var authorized = authorizedPermissions.get(i);
+                //没有权限满足该要求，认证失败，直接返回false
+                if (required.getId() < authorized.getId()) {
+                    //认证失败
+                    return false;
+                }
+                //不是一类权限
+                if (!required.getId().equals(authorized.getId())) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限的application作用范围为全部，则该权限符合
+                if (authorized.getApplicationId() == null) {
+                    //权限符合
+                    break;
+                }
+                //操作不在具体的application对象内，则需求的权限application作用范围为全部
+                //但已认证权限的application作用范围为局部，则该权限符合不符合
+                if (applicationId == null) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限作用的application范围为部分，但是需求权限作用范围是全都，则该权限符合不符合
+                if (!required.getSpecifyApplication()) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限作用的application范围和需求权限作用范围不一致，则该权限符合不符合
+                if (!authorized.getApplicationId().equals(applicationId)) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限的namespace作用范围为全部，则该权限符合
+                if (authorized.getNamespaceId() == null) {
+                    //权限符合
+                    break;
+                }
+                //操作不在具体的application对象内，则需求的权限application作用范围为全部
+                //但已认证权限的application作用范围为局部，则该权限符合不符合
+                if (namespaceId == null) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限作用的namespace范围为部分，但是需求权限作用范围是全都，则该权限符合不符合
+                if (!required.getSpecifyNamespace()) {
+                    //权限不符合
+                    continue;
+                }
+                //已认证权限作用的namespace范围和需求权限作用范围不一致，则该权限符合不符合
+                if (!authorized.getNamespaceId().equals(applicationId)) {
+                    //权限不符合
+                    continue;
+                }
+                log.error("""
+                                Authorization exception
+                                Detail:
+                                class authorized = {}
+                                class required = {}
+                                Long applicationId = {}
+                                Long namespaceId = {}
+                                                                
+                                StackTrace:
+                                {}""",
+                        authorized,
+                        required,
+                        applicationId,
+                        namespaceId,
+                        new RuntimeException().getStackTrace()
                 );
-    }
-
-
-    private List<PermissionPO> getActionRequiredPermissionPO(Long actionId) {
-        ActionRequirePO po = new ActionRequirePO();
-        po.setActionID(actionId);
-        List<Long> list = actionRequireRepository
-                .selectByPartition(po)
-                .stream()
-                .map(ActionRequirePO::getPermissionID)
-                .toList();
-        return permissionRepository.selectByIds(list);
-    }
-
-    @Nullable
-    private ActionPO getActionPO(String actionName) {
-        List<ActionPO> actionPOS = actionRepository.selectByWrapper(
-                new QueryWrapper<ActionPO>()
-                        .eq(DataBaseFields.ActionPO.ACTION_NAME, actionName)
-        );
-        if (actionPOS.size() != 1) return null;
-        else return actionPOS.get(0);
-    }
-
-    private List<SpecifiedPermissionBO> getPermissionByUser(Long userId) {
-        List<UserRolePO> list = userRoleRepository.selectByPartition(
-                AuthorizationUtils.convertToUserRolePOPartition(userId));
-        List<SpecifiedPermissionBO> permissionBOS = new ArrayList<>();
-        for (var userRole : list) {
-            List<PermissionPO> permissionLs = getPermissionByRole(userRole.getRoleId());
-            for (var permission : permissionLs) {
-                SpecifiedPermissionBO bo = getSpecifiedPermissionBO(userRole, permission);
-                permissionBOS.add(bo);
             }
         }
-        return permissionBOS;
+        return true;
     }
 
-    private SpecifiedPermissionBO getSpecifiedPermissionBO(UserRolePO userRole, PermissionPO permission) {
-        SpecifiedPermissionBO bo = new SpecifiedPermissionBO();
-        bo.setId(permission.getId());
-        if (permission.getSpecifyApplication() && userRole.getApplicationSpecification() != null) {
-            bo.setTargetApplication(userRole.getApplicationSpecification());
-        }
-        if (permission.getSpecifyNamespace() && userRole.getNamespaceSpecification() != null) {
-            bo.setTargetNamespace(userRole.getNamespaceSpecification());
-        }
-        return bo;
-    }
-
-    private List<PermissionPO> getPermissionByRole(Long roleId) {
-        List<Long> nextRoles = new ArrayList<>();
-        Set<Long> queriedRoles = new HashSet<>();
-        List<PermissionPO> permissionList = new ArrayList<>();
-        nextRoles.add(roleId);
-        do {
-            Long id = nextRoles.get((int) 0);
-            nextRoles.remove((int) 0);
-            if (queriedRoles.contains(id)) {
-                continue;
-            }
-            var permissionIds = rolePermissionRepository
-                    .selectByPartition(convertToRolePermissionPOPartition(id))
-                    .stream()
-                    .map(RolePermissionPO::getPermissionId)
-                    .toList();
-            permissionList.addAll(permissionRepository.selectByIds(permissionIds));
-            var nextIds = getNextRoleIds(id);
-            nextRoles.addAll(nextIds);
-            queriedRoles.add(id);
-        } while (!nextRoles.isEmpty());
-        return ArrayUtils.distinctByPojoIdentifier(permissionList);
-    }
-
-    private List<PermissionPO> getPermissionByActionName(String actionName) {
-        return permissionRepository.selectByIds(
-                actionRepository.selectByWrapper(
-                                new QueryWrapper<ActionPO>()
-                                        .eq(DataBaseFields.ActionPO.ACTION_NAME, actionName)
-                        ).stream()
-                        .map(AuthorizationUtils::convertToActionPOPartition)
-                        .map(actionRequireRepository::selectByPartition)
-                        .flatMap(List::stream)
-                        .map(ActionRequirePO::getPermissionID)
-                        .toList()
-        );
-
-    }
-
-    @NotNull
-    private List<Long> getNextRoleIds(Long roleId) {
-        String names = roleRepository.selectById(roleId).getParentRoleNames();
-        if (names == null || names.isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<String> nameList = StringUtils.splitByComma(names);
-        return nameList.stream()
-                .map(str -> roleRepository
-                        .selectByWrapper(new QueryWrapper<RolePO>().eq(ROLE_NAME, str))
-                )
-                .flatMap(List::stream)
-                .map(RolePO::getId)
-                .toList();
-    }
 
 }

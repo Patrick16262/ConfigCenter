@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import site.patrickshao.admin.biz.utils.PersistUtils;
+import site.patrickshao.admin.biz.utils.QuaryUtils;
 import site.patrickshao.admin.common.constants.DataBaseFields;
 import site.patrickshao.admin.common.entity.po.AbstractBasicFieldsObject;
 import site.patrickshao.admin.common.entity.po.AbstractFullFieldsObject;
@@ -18,6 +18,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Shao Yibo
@@ -54,10 +55,14 @@ public class DefaultRepository<T extends AbstractPersistObject> {
     }
 
     @NotNull
-    public List<T> selectByPartition(T entity) {
-        Wrapper<T> wrapper = PersistUtils.generatePartitionQueryWrapper(entity);
-        Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
+    public List<T> selectByParentId(Long parentId) {
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentId);
+        return selectByWrapper(wrapper);
+    }
 
+    @NotNull
+    public List<T> selectByParentIds(Map<Class<?>, Long> parentIds) {
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         return selectByWrapper(wrapper);
     }
 
@@ -66,6 +71,12 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.insert(entity);
 
         return entity;
+    }
+
+    public List<T> create(List<T> entities, String Operator) {
+        entities.forEach(entity -> processEntityBeforeCreate(entity, Operator));
+        entities.forEach(mapper::insert);
+        return entities;
     }
 
     public void updateById(Long id, T entity, String operator) {
@@ -91,8 +102,16 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.update(entity, wrapper);
     }
 
-    public void updateByPartition(T entity, String operator) {
-        Wrapper<T> wrapper = PersistUtils.generatePartitionQueryWrapper(entity);
+    public void updateByParentId(T entity, Long parentId, String operator) {
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentId);
+        Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
+        processEntityBeforeUpdate(entity, operator);
+
+        mapper.update(entity, wrapper);
+    }
+
+    public void updateByParentIds(T entity, Map<Class<?>, Long> parentIds, String operator) {
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
         processEntityBeforeUpdate(entity, operator);
 
@@ -125,13 +144,30 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.delete(wrapper);
     }
 
-    public void deleteByPartition(T entity, String operator) {
+    public void deleteByParentId(Long parentId, String operator) {
         T t = ReflectUtils.newInstance(entityType);
         processEntityBeforeDelete(t, operator);
-        Wrapper<T> wrapper = PersistUtils.generatePartitionQueryWrapper(t);
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentId);
 
         mapper.update(t, wrapper);
         mapper.delete(wrapper);
+    }
+
+    public void deleteByParentIds(Map<Class<?>, Long> parentIds, String operator) {
+        T t = ReflectUtils.newInstance(entityType);
+        processEntityBeforeDelete(t, operator);
+        Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
+
+        mapper.update(t, wrapper);
+        mapper.delete(wrapper);
+    }
+
+    public boolean exists(Long id) {
+        return mapper.selectCount(new QueryWrapper<T>().eq(DataBaseFields.ID, id)) > 0;
+    }
+
+    public Class<T> getEntityType() {
+        return entityType;
     }
 
     private void processEntityBeforeDelete(T t, String operator) {

@@ -3,7 +3,7 @@ package site.patrickshao.admin.common.entity.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
-import site.patrickshao.admin.common.annotation.PartitionField;
+import site.patrickshao.admin.common.annotation.ParentId;
 
 import java.util.Date;
 import java.util.Objects;
@@ -16,7 +16,7 @@ import java.util.Objects;
 @TableName("`Cluster`")
 @GenerateRepository
 public class ClusterPO extends AbstractFullFieldsObject {
-    @PartitionField
+    @ParentId
     private Long applicationId;
     @TableField("`Name`")
     private String name;

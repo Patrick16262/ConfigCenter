@@ -3,7 +3,7 @@ package site.patrickshao.admin.common.entity.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
-import site.patrickshao.admin.common.annotation.PartitionField;
+import site.patrickshao.admin.common.annotation.ParentId;
 
 import java.util.Objects;
 
@@ -15,7 +15,7 @@ import java.util.Objects;
 @TableName("`Namespace`")
 @GenerateRepository
 public class NamespacePO extends AbstractFullFieldsObject {
-    @PartitionField
+    @ParentId
     private Long applicationID;
     @TableField("`name`")
     private String name;

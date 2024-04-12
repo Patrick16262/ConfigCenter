@@ -2,7 +2,7 @@ package site.patrickshao.admin.common.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
-import site.patrickshao.admin.common.annotation.PartitionField;
+import site.patrickshao.admin.common.annotation.ParentId;
 
 import java.util.Date;
 import java.util.Objects;
@@ -18,7 +18,7 @@ public class AuditPO extends AbstractPersistObject {
     private Date operationTime;
     private Long operatorId;
     private String operatorName;
-    @PartitionField
+    @ParentId
     private Long appId;
     private String appName;
     private Long namespaceId;

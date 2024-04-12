@@ -14,4 +14,13 @@ public interface DataBaseFields {
     interface RolePO {
         String ROLE_NAME = "RoleName";
     }
+
+    interface UserPO {
+        String USER_NAME = "UserName";
+    }
+
+    interface UserRolePO {
+        String USER_ID = "UserID";
+        String ROLE_ID = "RoleID";
+    }
 }

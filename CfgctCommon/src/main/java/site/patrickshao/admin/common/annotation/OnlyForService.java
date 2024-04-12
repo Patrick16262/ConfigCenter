@@ -3,15 +3,13 @@ package site.patrickshao.admin.common.annotation;
 import java.lang.annotation.*;
 
 /**
- *
  * @author Shao Yibo
- * @date 2024/4/4
+ * @description
+ * @date 2024/4/12
  */
-
-@Target({ElementType.FIELD})
+@Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-public @interface PartitionField {
-    String parentColum() default "id";
+public @interface OnlyForService {
 }
