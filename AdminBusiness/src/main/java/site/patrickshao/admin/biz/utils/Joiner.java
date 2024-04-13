@@ -1,21 +1,15 @@
 package site.patrickshao.admin.biz.utils;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jakarta.validation.constraints.NotNull;
 import site.patrickshao.admin.biz.repository.DefaultRepository;
 import site.patrickshao.admin.common.entity.PojoWithIdentifier;
 import site.patrickshao.admin.common.entity.po.AbstractPersistObject;
-import site.patrickshao.admin.common.entity.po.RolePO;
 import site.patrickshao.admin.common.utils.Pair;
-import site.patrickshao.admin.common.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE_NAME;
 
 /**
  * @author Shao Yibo

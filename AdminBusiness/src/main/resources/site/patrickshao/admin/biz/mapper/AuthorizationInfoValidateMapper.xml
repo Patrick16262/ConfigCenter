@@ -1,0 +1,7 @@
+<mapper xmlns="http://mybatis.org/schema/mybatis-mapper">
+    <select id="selectApplicationIdByTableName" resultType="java.lang.Long">
+        SELECT applicationId
+        FROM #{tableName}
+        WHERE id = #{id}
+    </select>
+</mapper>

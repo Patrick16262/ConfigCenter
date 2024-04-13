@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
+import site.patrickshao.admin.common.entity.HaveNamespaceParent;
 
 import java.util.Objects;
 
@@ -14,9 +16,9 @@ import java.util.Objects;
  */
 @TableName("`Branch`")
 @GenerateRepository
-public class BranchPO extends AbstractFullFieldsObject {
+public class BranchPO extends AbstractFullFieldsObject implements HaveApplicationParent, HaveNamespaceParent {
     @TableField("Name")
-    private Long name;
+    private String name;
     @ParentId(ClusterPO.class)
     private Long clusterId;
     @ParentId(NamespacePO.class)
@@ -25,11 +27,11 @@ public class BranchPO extends AbstractFullFieldsObject {
     private String branchType;
     private Long applicationId;
 
-    public Long getName() {
+    public String getName() {
         return name;
     }
 
-    public void setName(Long name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -41,10 +43,12 @@ public class BranchPO extends AbstractFullFieldsObject {
         this.clusterId = clusterId;
     }
 
+    @Override
     public Long getNamespaceId() {
         return namespaceId;
     }
 
+    @Override
     public void setNamespaceId(Long namespaceId) {
         this.namespaceId = namespaceId;
     }
@@ -65,10 +69,12 @@ public class BranchPO extends AbstractFullFieldsObject {
         this.branchType = branchType;
     }
 
+    @Override
     public Long getApplicationId() {
         return applicationId;
     }
 
+    @Override
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
     }

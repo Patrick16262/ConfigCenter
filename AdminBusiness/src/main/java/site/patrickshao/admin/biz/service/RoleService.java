@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.patrickshao.admin.biz.annotation.PreAuthorize;
 import site.patrickshao.admin.biz.repository.DefaultRepository;
 import site.patrickshao.admin.biz.secure.AuthorizationContext;
-import site.patrickshao.admin.common.annotation.OnlyForService;
+import site.patrickshao.admin.common.annotation.NotForController;
 import site.patrickshao.admin.common.entity.bo.RoleDTO;
 import site.patrickshao.admin.common.entity.bo.SpecifiedPermissionBO;
 import site.patrickshao.admin.common.entity.dto.SpecifiedRoleDTO;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE_NAME;
+import static site.patrickshao.admin.common.constants.DataBaseFields.Role.ROLE_NAME;
 
 /**
  * @author Shao Yibo
@@ -88,7 +88,8 @@ public class RoleService {
     @Transactional
     @PreAuthorize("Role#Create")
     public Long createRole(RolePO rolePO) {
-        Throwables.validateRequest(!isRoleNameUnique(rolePO.getRoleName()), "Role name already exists");
+        Throwables.validateRequest(!isRoleNameUnique(rolePO.getRoleName()),
+                "Role name already exists");
         return roleRepository.create(rolePO, AuthorizationContext.getUsername()).getId();
     }
 
@@ -96,15 +97,31 @@ public class RoleService {
     @PreAuthorize("Role#Delete")
     public void deleteRole(Long roleId) {
         Throwables.validateRequest(!roleRepository.exists(roleId), "Role not found");
+        Throwables.validateRequest(roleRepository.selectById(roleId).getSystemDefault(),
+                "System default role cannot be deleted");
         roleRepository.deleteById(roleId, AuthorizationContext.getUsername());
     }
 
     @Transactional
     @PreAuthorize("Role#Editname")
     public void editRoleName(Long roleId, String roleName) {
-        Throwables.validateRequest(!roleRepository.exists(roleId), "Role not found");
+        RolePO po = roleRepository.selectById(roleId);
+        Throwables.validateRequest(po == null, "Role not found");
+        Throwables.validateRequest(po.getSystemDefault(), "System default role name cannot be edited");
+        Throwables.validateRequest(!isRoleNameUnique(roleName), "Role name already exists");
         RolePO rolePO = new RolePO();
         rolePO.setRoleName(roleName);
+        roleRepository.updateById(roleId, rolePO, AuthorizationContext.getUsername());
+    }
+
+    @Transactional
+    @PreAuthorize("Role#Editname")
+    public void editComment(Long roleId, String newComment) {
+        RolePO po = roleRepository.selectById(roleId);
+        Throwables.validateRequest(po == null, "Role not found");
+        Throwables.validateRequest(po.getSystemDefault(), "System default role name cannot be edited");
+        RolePO rolePO = new RolePO();
+        rolePO.setComment(newComment);
         roleRepository.updateById(roleId, rolePO, AuthorizationContext.getUsername());
     }
 
@@ -127,8 +144,26 @@ public class RoleService {
         return roleRepository.selectByWrapper(new QueryWrapper<RolePO>().eq(ROLE_NAME, roleName)).isEmpty();
     }
 
+    /**
+     * Get the permissions that are required to assign a role
+     * ActionRequire虽然有comment字段，但是不支持读取，创建，修改，删除comment
+     * 仅作为数据库维护人员的提示
+     * 任何关系类实体的comment字段都是这样
+     *
+     * @param roleId the role id
+     * @return the list of permissions
+     */
+
     @Transactional
-    @OnlyForService
+    public List<PermissionPO> getRoleAssignRequiredPermissions(Long roleId) {
+        Throwables.validateRequest(!roleRepository.exists(roleId), "Role not found");
+        List<RoleAssignRequirePO> roleAssignRequirePOS = roleAssignRequireRepository.selectByParentId(roleId);
+        List<Long> permissionIds = roleAssignRequirePOS.stream().map(RoleAssignRequirePO::getPermissionId).toList();
+        return permissionRepository.selectByIds(permissionIds);
+    }
+
+    @Transactional
+    @NotForController
     public List<SpecifiedPermissionBO> getSpecifiedPermissionBOByRoleIdAndUserRole(Long roleId, UserRolePO userRolePO) {
         List<Long> roleIds = new ArrayList<>();
         roleIds.add(roleId);
@@ -149,7 +184,7 @@ public class RoleService {
     }
 
     @Transactional
-    @OnlyForService
+    @NotForController
     public List<Long> getParentRoleIds(Long roleId) {
         String names = roleRepository.selectById(roleId).getParentRoleNames();
         if (names == null || names.isEmpty()) {
@@ -165,10 +200,5 @@ public class RoleService {
                 .toList();
     }
 
-    @Transactional
-    public List<PermissionPO> getRoleAssignRequiredPermissions(Long roleId) {
-        List<RoleAssignRequirePO> roleAssignRequirePOS = roleAssignRequireRepository.selectByParentId(roleId);
-        List<Long> permissionIds = roleAssignRequirePOS.stream().map(RoleAssignRequirePO::getPermissionId).toList();
-        return permissionRepository.selectByIds(permissionIds);
-    }
+
 }

@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
+import site.patrickshao.admin.common.entity.HaveNamespaceParent;
 
 import java.util.Objects;
 
@@ -14,23 +16,26 @@ import java.util.Objects;
  */
 @TableName("`Namespace`")
 @GenerateRepository
-public class NamespacePO extends AbstractFullFieldsObject {
+public class NamespacePO extends AbstractFullFieldsObject implements HaveApplicationParent, HaveNamespaceParent {
     @ParentId
-    private Long applicationID;
+    private Long applicationId;
     @TableField("`name`")
     private String name;
     @TableField("`associate`")
     private Long associate;
+    //此字段废弃
     private Long orderNum;
     @TableField("`type`")
     private String type;
 
-    public Long getApplicationID() {
-        return applicationID;
+    @Override
+    public Long getApplicationId() {
+        return applicationId;
     }
 
-    public void setApplicationID(Long applicationID) {
-        this.applicationID = applicationID;
+    @Override
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getName() {
@@ -49,10 +54,12 @@ public class NamespacePO extends AbstractFullFieldsObject {
         this.associate = associate;
     }
 
+    @Deprecated
     public Long getOrderNum() {
         return orderNum;
     }
 
+    @Deprecated
     public void setOrderNum(Long orderNum) {
         this.orderNum = orderNum;
     }
@@ -70,22 +77,38 @@ public class NamespacePO extends AbstractFullFieldsObject {
         if (this == object) return true;
         if (!(object instanceof NamespacePO that)) return false;
         if (!super.equals(object)) return false;
-        return Objects.equals(applicationID, that.applicationID) && Objects.equals(name, that.name) && Objects.equals(associate, that.associate) && Objects.equals(orderNum, that.orderNum) && Objects.equals(type, that.type);
+        return Objects.equals(applicationId, that.applicationId) && Objects.equals(name, that.name) && Objects.equals(associate, that.associate) && Objects.equals(orderNum, that.orderNum) && Objects.equals(type, that.type);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), applicationID, name, associate, orderNum, type);
+        return Objects.hash(super.hashCode(), applicationId, name, associate, orderNum, type);
     }
 
     @Override
     public String toString() {
         return "NamespacePO{" +
-                "applicationID=" + applicationID +
+                "applicationID=" + applicationId +
                 ", name='" + name + '\'' +
                 ", associate=" + associate +
                 ", orderNum=" + orderNum +
                 ", type='" + type + '\'' +
                 "} " + super.toString();
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public Long getNamespaceId() {
+        return getId();
+    }
+
+    /**
+     * @param namespaceId
+     */
+    @Override
+    public void setNamespaceId(Long namespaceId) {
+        setId(namespaceId);
     }
 }

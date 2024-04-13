@@ -27,7 +27,7 @@ public class QuaryUtils {
         return new QueryWrapper<T>().eq(columName, parentId);
     }
 
-    public static  <T> Wrapper<T> generateByParentIdQueryWrapper(Class<T> chidrenClass, Map<Class<?>, Long> parentIds) {
+    public static  <T, V> Wrapper<T> generateByParentIdQueryWrapper(Class<T> chidrenClass, Map<Class<V>, Long> parentIds) {
         Map<String, Field> map = getParentIdColumNames(chidrenClass);
         Map<String, Long> queryMap = new HashMap<>();
         QueryWrapper<T> wrapper = new QueryWrapper<T>();

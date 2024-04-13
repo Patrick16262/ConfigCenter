@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
 
 import java.util.Objects;
 
@@ -14,21 +15,21 @@ import java.util.Objects;
  */
 @TableName("`AccessToken`")
 @GenerateRepository
-public class AccessTokenPO extends AbstractBasicFieldsObject {
+public class AccessTokenPO extends AbstractBasicFieldsObject implements HaveApplicationParent {
     @ParentId
     private Long applicationId;
     private String applicationName;
     @TableField("`Token`")
     private String token;
-
+@Override
     public Long getApplicationId() {
         return applicationId;
     }
+    @Override
 
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
     }
-
     public String getApplicationName() {
         return applicationName;
     }

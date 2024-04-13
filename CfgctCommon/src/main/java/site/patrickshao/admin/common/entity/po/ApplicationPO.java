@@ -1,7 +1,9 @@
 package site.patrickshao.admin.common.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.validation.constraints.NotNull;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
 
 import java.util.Date;
 import java.util.Objects;
@@ -13,9 +15,10 @@ import java.util.Objects;
  */
 @TableName("`Application`")
 @GenerateRepository
-public class ApplicationPO extends AbstractFullFieldsObject {
+public class ApplicationPO extends AbstractFullFieldsObject implements HaveApplicationParent {
     private String applicationName;
     private String nickName;
+    @NotNull
     private Boolean deferredDelete;
     private Date tobeDeletedAt;
 
@@ -72,5 +75,21 @@ public class ApplicationPO extends AbstractFullFieldsObject {
                 ", deferredDelete=" + deferredDelete +
                 ", tobeDeletedAt=" + tobeDeletedAt +
                 "} " + super.toString();
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public Long getApplicationId() {
+        return getId();
+    }
+
+    /**
+     * @param applicationId
+     */
+    @Override
+    public void setApplicationId(Long applicationId) {
+        setId(applicationId);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.patrickshao.admin.biz.annotation.PreAuthorize;
 import site.patrickshao.admin.biz.repository.DefaultRepository;
 import site.patrickshao.admin.biz.secure.AuthorizationContext;
-import site.patrickshao.admin.common.annotation.OnlyForService;
+import site.patrickshao.admin.common.annotation.NotForController;
 import site.patrickshao.admin.common.constants.DataBaseFields;
 import site.patrickshao.admin.common.entity.dto.SpecifiedUserDTO;
 import site.patrickshao.admin.common.entity.po.*;
@@ -16,7 +16,7 @@ import site.patrickshao.admin.common.utils.Throwables;
 
 import java.util.List;
 
-import static site.patrickshao.admin.common.constants.DataBaseFields.UserPO.USER_NAME;
+import static site.patrickshao.admin.common.constants.DataBaseFields.User.USER_NAME;
 
 /**
  * @author Shao Yibo
@@ -107,7 +107,7 @@ public class UserService {
     }
 
     @Transactional
-    @OnlyForService
+    @NotForController
     public void assignRole(Long userId, Long roleId, Long applicationId, Long namespaceId) {
         UserRolePO userRolePO = new UserRolePO();
         userRolePO.setUserId(userId);
@@ -120,8 +120,8 @@ public class UserService {
 
     public void deassignRole(Long userId, Long roleId) {
         userRoleRepository.deleteByWrapper(new QueryWrapper<UserRolePO>()
-                        .eq(DataBaseFields.UserRolePO.USER_ID, userId)
-                        .eq(DataBaseFields.UserRolePO.ROLE_ID, roleId),
+                        .eq(DataBaseFields.UserRole.USER_ID, userId)
+                        .eq(DataBaseFields.UserRole.ROLE_ID, roleId),
                 AuthorizationContext.getUsername());
     }
 }

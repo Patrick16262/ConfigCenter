@@ -4,6 +4,7 @@ package site.patrickshao.admin.biz.repository;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import site.patrickshao.admin.biz.utils.QuaryUtils;
@@ -17,6 +18,7 @@ import site.patrickshao.admin.common.utils.Throwables;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +42,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         this.entityType = ReflectUtils.getSuperClassGenericArgument(this.getClass());
     }
 
+    @Nullable
     public T selectById(Long id) {
         return mapper.selectById(id);
     }
@@ -61,7 +64,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
     }
 
     @NotNull
-    public List<T> selectByParentIds(Map<Class<?>, Long> parentIds) {
+    public <V> List<T> selectByParentIds(Map<Class<V>, Long> parentIds) {
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         return selectByWrapper(wrapper);
     }
@@ -110,7 +113,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.update(entity, wrapper);
     }
 
-    public void updateByParentIds(T entity, Map<Class<?>, Long> parentIds, String operator) {
+    public <V> void updateByParentIds(T entity, Map<Class<V>, Long> parentIds, String operator) {
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
         processEntityBeforeUpdate(entity, operator);
@@ -153,7 +156,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.delete(wrapper);
     }
 
-    public void deleteByParentIds(Map<Class<?>, Long> parentIds, String operator) {
+    public <V> void deleteByParentIds(Map<Class<V>, Long> parentIds, String operator) {
         T t = ReflectUtils.newInstance(entityType);
         processEntityBeforeDelete(t, operator);
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
@@ -213,5 +216,23 @@ public class DefaultRepository<T extends AbstractPersistObject> {
                     object.getCreateTime()
             );
         }
+    }
+
+    public <V> void deleteByParentId(Class<V> parentClass, Long parentId, String operator) {
+        Map<Class<V>, Long> map = new HashMap<>();
+        map.put(parentClass, parentId);
+        deleteByParentIds(map, operator);
+    }
+
+    public <V> void updateByParentId(T entity, Class<V> parentClass, Long parentId, String operator) {
+        Map<Class<V>, Long> map = new HashMap<>();
+        map.put(parentClass, parentId);
+        updateByParentIds(entity, map, operator);
+    }
+
+    public <V> List<T> selectByParentId(Class<V> parentClass, Long parentId) {
+        Map<Class<V>, Long> map = new HashMap<>();
+        map.put(parentClass, parentId);
+        return selectByParentIds(map);
     }
 }

@@ -6,7 +6,7 @@ import site.patrickshao.admin.common.annotation.GenerateRepository;
 
 import java.util.Objects;
 
-import static site.patrickshao.admin.common.constants.DataBaseFields.ActionPO.ACTION_NAME;
+import static site.patrickshao.admin.common.constants.DataBaseFields.Action.ACTION_NAME;
 
 /**
  * @author Shao Yibo

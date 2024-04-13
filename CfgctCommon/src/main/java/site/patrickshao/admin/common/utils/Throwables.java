@@ -82,13 +82,13 @@ public final class Throwables {
 
     public static void throwOnNull(Object... NonNulObjects) {
         for (Object obj : NonNulObjects) {
-            if (obj == null) throw new NullPointerException();
+            if (obj == null) throw new IllegalArgumentException();
         }
     }
 
     public static void throwOnNotNull(Object... Null) {
         for (Object obj : Null) {
-            if (obj != null) throw new NullPointerException();
+            if (obj != null) throw new IllegalArgumentException();
         }
     }
 

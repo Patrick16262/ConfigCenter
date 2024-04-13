@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
+import site.patrickshao.admin.common.entity.HaveNamespaceParent;
 
 import java.util.Objects;
 
@@ -14,7 +16,7 @@ import java.util.Objects;
  */
 @TableName("`Modification`")
 @GenerateRepository
-public class ModificationPO extends AbstractBasicFieldsObject {
+public class ModificationPO extends AbstractBasicFieldsObject implements HaveApplicationParent, HaveNamespaceParent {
     @TableField("`value`")
     private String value;
     @TableField("`key`")
@@ -58,18 +60,22 @@ public class ModificationPO extends AbstractBasicFieldsObject {
         this.publishId = publishId;
     }
 
+    @Override
     public Long getApplicationId() {
         return applicationId;
     }
 
+    @Override
     public void setApplicationId(Long applicationId) {
         this.applicationId = applicationId;
     }
 
+    @Override
     public Long getNamespaceId() {
         return namespaceId;
     }
 
+    @Override
     public void setNamespaceId(Long namespaceId) {
         this.namespaceId = namespaceId;
     }

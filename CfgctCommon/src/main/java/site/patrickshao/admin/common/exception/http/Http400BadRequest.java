@@ -1,6 +1,12 @@
 package site.patrickshao.admin.common.exception.http;
 
 /**
+ * Illegal request exception
+ * IllegalArgumentException can be seen as Http400BadRequest
+ * The default message foe IllegalArgumentException is
+ * "Certain arguments are invalid;
+ * you risk initializing fields that shouldn't be initialized and must remain null."
+ *
  * @author Shao Yibo
  * @description
  * @date 2024/4/10

@@ -1,6 +1,7 @@
 package site.patrickshao.admin.common.entity.bo;
 
 import site.patrickshao.admin.common.entity.PojoWithIdentifier;
+import site.patrickshao.admin.common.entity.dto.SpecifiedUserDTO;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -19,15 +20,7 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
     @Nullable
     private Long targetNamespaceId;
     private String actionName;
-
-    public AuthorizationContextBO() {
-    }
-
-    public AuthorizationContextBO(Long userId, @jakarta.annotation.Nullable Long targetApplicationId, @jakarta.annotation.Nullable Long targetNamespaceId) {
-        this.userId = userId;
-        this.targetApplicationId = targetApplicationId;
-        this.targetNamespaceId = targetNamespaceId;
-    }
+    private SpecifiedUserDTO specifiedUserDTO;
 
     public Long getUserId() {
         return userId;
@@ -37,21 +30,29 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
         this.userId = userId;
     }
 
-    @jakarta.annotation.Nullable
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    @Nullable
     public Long getTargetApplicationId() {
         return targetApplicationId;
     }
 
-    public void setTargetApplicationId(@jakarta.annotation.Nullable Long targetApplicationId) {
+    public void setTargetApplicationId(@Nullable Long targetApplicationId) {
         this.targetApplicationId = targetApplicationId;
     }
 
-    @jakarta.annotation.Nullable
+    @Nullable
     public Long getTargetNamespaceId() {
         return targetNamespaceId;
     }
 
-    public void setTargetNamespaceId(@jakarta.annotation.Nullable Long targetNamespaceId) {
+    public void setTargetNamespaceId(@Nullable Long targetNamespaceId) {
         this.targetNamespaceId = targetNamespaceId;
     }
 
@@ -62,32 +63,20 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
     public void setActionName(String actionName) {
         this.actionName = actionName;
     }
-    public String getUsername() {
-        return username;
+
+    public SpecifiedUserDTO getSpecifiedUserDTO() {
+        return specifiedUserDTO;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Long getPojoIdentifier() {
-        return userId;
+    public void setSpecifiedUserDTO(SpecifiedUserDTO specifiedUserDTO) {
+        this.specifiedUserDTO = specifiedUserDTO;
     }
 
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof AuthorizationContextBO that)) return false;
-        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(targetApplicationId, that.targetApplicationId) && Objects.equals(targetNamespaceId, that.targetNamespaceId) && Objects.equals(actionName, that.actionName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, username, targetApplicationId, targetNamespaceId, actionName);
+        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(targetApplicationId, that.targetApplicationId) && Objects.equals(targetNamespaceId, that.targetNamespaceId) && Objects.equals(actionName, that.actionName) && Objects.equals(specifiedUserDTO, that.specifiedUserDTO);
     }
 
     @Override
@@ -98,6 +87,20 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
                 ", targetApplicationId=" + targetApplicationId +
                 ", targetNamespaceId=" + targetNamespaceId +
                 ", actionName='" + actionName + '\'' +
+                ", specifiedUserDTO=" + specifiedUserDTO +
                 '}';
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, targetApplicationId, targetNamespaceId, actionName, specifiedUserDTO);
+    }
+
+    /**
+     * @return
+     */
+    @Override
+    public Long getPojoIdentifier() {
+        return userId;
     }
 }

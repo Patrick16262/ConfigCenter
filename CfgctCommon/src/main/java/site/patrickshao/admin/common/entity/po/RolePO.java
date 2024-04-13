@@ -7,7 +7,7 @@ import site.patrickshao.admin.common.annotation.GenerateRepository;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import static site.patrickshao.admin.common.constants.DataBaseFields.RolePO.ROLE_NAME;
+import static site.patrickshao.admin.common.constants.DataBaseFields.Role.ROLE_NAME;
 
 /**
  * @author Shao Yibo

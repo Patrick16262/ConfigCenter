@@ -35,17 +35,17 @@ public class AuthorizeAspect {
 
     @Before("pointcut()")
     public void validatePermission(JoinPoint joinPoint) {
-        Throwables.throwOnCondition(AuthorizationContext.getUserId() == null, new InvalidAuthorizationContextException());
         Field field = ReflectUtils.getField(joinPoint.getTarget().getClass(),
                 joinPoint.getSignature().getName());
         String actionName = field.getAnnotation(PreAuthorize.class).value();
+        AuthorizationContext.setActionName(actionName);
         if (!authorizationService.checkPermission()) {
             throw new Http401Unauthorized();
         }
     }
 
     public static void removeCurrentAuthorizationContext() {
-        AuthorizationContext.destory();
+        AuthorizationContext.destroy();
     }
 
 }

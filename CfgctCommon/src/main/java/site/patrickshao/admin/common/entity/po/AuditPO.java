@@ -3,6 +3,8 @@ package site.patrickshao.admin.common.entity.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.HaveApplicationParent;
+import site.patrickshao.admin.common.entity.HaveNamespaceParent;
 
 import java.util.Date;
 import java.util.Objects;
@@ -14,12 +16,12 @@ import java.util.Objects;
  */
 @TableName("`Audit`")
 @GenerateRepository
-public class AuditPO extends AbstractPersistObject {
+public class AuditPO extends AbstractPersistObject implements HaveApplicationParent, HaveNamespaceParent {
     private Date operationTime;
     private Long operatorId;
     private String operatorName;
     @ParentId
-    private Long appId;
+    private Long applicationId;
     private String appName;
     private Long namespaceId;
     private String namespaceName;
@@ -48,12 +50,14 @@ public class AuditPO extends AbstractPersistObject {
         this.operatorName = operatorName;
     }
 
-    public Long getAppId() {
-        return appId;
+    @Override
+    public Long getApplicationId() {
+        return applicationId;
     }
 
-    public void setAppId(Long appId) {
-        this.appId = appId;
+    @Override
+    public void setApplicationId(Long applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getAppName() {
@@ -64,10 +68,12 @@ public class AuditPO extends AbstractPersistObject {
         this.appName = appName;
     }
 
+    @Override
     public Long getNamespaceId() {
         return namespaceId;
     }
 
+    @Override
     public void setNamespaceId(Long namespaceId) {
         this.namespaceId = namespaceId;
     }
@@ -85,12 +91,12 @@ public class AuditPO extends AbstractPersistObject {
         if (this == object) return true;
         if (!(object instanceof AuditPO auditPO)) return false;
         if (!super.equals(object)) return false;
-        return Objects.equals(operationTime, auditPO.operationTime) && Objects.equals(operatorId, auditPO.operatorId) && Objects.equals(operatorName, auditPO.operatorName) && Objects.equals(appId, auditPO.appId) && Objects.equals(appName, auditPO.appName) && Objects.equals(namespaceId, auditPO.namespaceId) && Objects.equals(namespaceName, auditPO.namespaceName);
+        return Objects.equals(operationTime, auditPO.operationTime) && Objects.equals(operatorId, auditPO.operatorId) && Objects.equals(operatorName, auditPO.operatorName) && Objects.equals(applicationId, auditPO.applicationId) && Objects.equals(appName, auditPO.appName) && Objects.equals(namespaceId, auditPO.namespaceId) && Objects.equals(namespaceName, auditPO.namespaceName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), operationTime, operatorId, operatorName, appId, appName, namespaceId, namespaceName);
+        return Objects.hash(super.hashCode(), operationTime, operatorId, operatorName, applicationId, appName, namespaceId, namespaceName);
     }
 
     @Override
@@ -99,7 +105,7 @@ public class AuditPO extends AbstractPersistObject {
                 "operationTime=" + operationTime +
                 ", operatorId=" + operatorId +
                 ", operatorName='" + operatorName + '\'' +
-                ", appId=" + appId +
+                ", appId=" + applicationId +
                 ", appName='" + appName + '\'' +
                 ", namespaceId=" + namespaceId +
                 ", namespaceName='" + namespaceName + '\'' +
