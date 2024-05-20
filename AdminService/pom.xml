@@ -10,7 +10,7 @@
     <artifactId>AdminService</artifactId>
     <packaging>jar</packaging>
 
-    <name>untitled</name>
+    <name>AdminService</name>
     <url>http://maven.apache.org</url>
 
     <properties>

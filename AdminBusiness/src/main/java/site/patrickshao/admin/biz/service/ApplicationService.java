@@ -1,7 +1,6 @@
 package site.patrickshao.admin.biz.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,9 +83,10 @@ public class ApplicationService {
         applicationPO.setTobeDeletedAt(java.util.Date.from(Instant.MAX));
         applicationRepository.updateById(applicationPO, AuthorizationContext.getUsername());
     }
+
     @Transactional
     @PreAuthorize("Application#EditApplicationName")
-    public void editApplicationName(Long applicationId, String newApplicationName){
+    public void editApplicationName(Long applicationId, String newApplicationName) {
         ApplicationPO currentApplication = applicationRepository.selectById(applicationId);
         Throwables.validateRequest(currentApplication != null, "Application not found");
         Throwables.validateRequest(isApplicationNameUnique(newApplicationName),
@@ -140,4 +140,41 @@ public class ApplicationService {
     }
 
 
+    @SuppressWarnings("DataFlowIssue")
+    public void enableRequireAccessKey(Long applicationId) {
+        ApplicationPO applicationPO = applicationRepository.selectById(applicationId);
+        Throwables.validateRequest(applicationPO != null, "Application not found");
+        Throwables.validateRequest(!applicationPO.getRequireAccessKey(),
+                "Application already requires access key");
+        applicationPO.setRequireAccessKey(true);
+        applicationRepository.updateById(applicationPO, AuthorizationContext.getUsername());
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public void disableRequireAccessKey(Long applicationId) {
+        ApplicationPO applicationPO = applicationRepository.selectById(applicationId);
+        Throwables.validateRequest(applicationPO != null, "Application not found");
+        Throwables.validateRequest(applicationPO.getRequireAccessKey(),
+                "Application already does not require access key");
+        applicationPO.setRequireAccessKey(false);
+        applicationRepository.updateById(applicationPO, AuthorizationContext.getUsername());
+    }
+
+    public void generateAccessKey(Long applicationId) {
+        ApplicationPO applicationPO = applicationRepository.selectById(applicationId);
+        Throwables.validateRequest(applicationPO != null, "Application not found");
+    }
+
+    public void enableAccessKey(Long accessKeyId) {
+        AccessTokenPO accessTokenPO = accessTokenRepository.selectById(accessKeyId);
+        Throwables.validateRequest(accessTokenPO != null, "Access key not found");
+        Throwables.validateRequest(!accessTokenPO.g, "Access key already enabled");
+
+    }
+
+    public void disableAccessKey(Long accessKeyId) {
+    }
+
+    public List<AccessTokenPO> getAccessKeyList(Long applicationId) {
+    }
 }

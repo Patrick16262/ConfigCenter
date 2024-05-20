@@ -21,7 +21,8 @@ public class AccessTokenPO extends AbstractBasicFieldsObject implements HaveAppl
     private String applicationName;
     @TableField("`Token`")
     private String token;
-@Override
+    private Boolean enabled;
+    @Override
     public Long getApplicationId() {
         return applicationId;
     }
@@ -46,17 +47,25 @@ public class AccessTokenPO extends AbstractBasicFieldsObject implements HaveAppl
         this.token = token;
     }
 
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof AccessTokenPO that)) return false;
         if (!super.equals(object)) return false;
-        return Objects.equals(applicationId, that.applicationId) && Objects.equals(applicationName, that.applicationName) && Objects.equals(token, that.token);
+        return Objects.equals(applicationId, that.applicationId) && Objects.equals(applicationName, that.applicationName) && Objects.equals(token, that.token) && Objects.equals(enabled, that.enabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), applicationId, applicationName, token);
+        return Objects.hash(super.hashCode(), applicationId, applicationName, token, enabled);
     }
 
     @Override
@@ -65,6 +74,7 @@ public class AccessTokenPO extends AbstractBasicFieldsObject implements HaveAppl
                 "applicationId=" + applicationId +
                 ", applicationName='" + applicationName + '\'' +
                 ", token='" + token + '\'' +
+                ", enabled=" + enabled +
                 "} " + super.toString();
     }
 }

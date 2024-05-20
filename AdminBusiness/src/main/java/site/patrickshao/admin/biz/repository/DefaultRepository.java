@@ -3,6 +3,7 @@ package site.patrickshao.admin.biz.repository;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
@@ -64,7 +65,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
     }
 
     @NotNull
-    public <V> List<T> selectByParentIds(Map<Class<V>, Long> parentIds) {
+    public List<T> selectByParentIds(Map<Class<?>, Long> parentIds) {
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         return selectByWrapper(wrapper);
     }
@@ -97,6 +98,16 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.updateById(entity);
     }
 
+    public void updateByIdWithoutOperator(T entity) {
+        Throwables.throwOnNull(entity.getId());
+        processEntityBeforeUpdate(entity, " ");
+        if (entity instanceof AbstractFullFieldsObject object) {
+            object.setLastModifiedBy(null);
+            object.setLastModifyTime(null);
+        }
+        mapper.updateById(entity);
+    }
+
 
     public void updateByWrapper(Wrapper<T> wrapper, T entity, String operator) {
         Throwables.throwOnNull(entity.getId());
@@ -104,6 +115,16 @@ public class DefaultRepository<T extends AbstractPersistObject> {
 
         mapper.update(entity, wrapper);
     }
+
+    public void updateByUpdateWrapper(UpdateWrapper<T> wrapper, String operator) {
+        wrapper.set(DataBaseFields.LAST_MODIFIED_BY, operator);
+        wrapper.set(DataBaseFields.LAST_MODIFY_TIME, Date.from(Instant.now()));
+        mapper.update(wrapper);
+    }
+    public void updateByUpdateWrapperWithoutOperator(UpdateWrapper<T> wrapper) {
+        mapper.update(wrapper);
+    }
+
 
     public void updateByParentId(T entity, Long parentId, String operator) {
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentId);
@@ -113,7 +134,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.update(entity, wrapper);
     }
 
-    public <V> void updateByParentIds(T entity, Map<Class<V>, Long> parentIds, String operator) {
+    public void updateByParentIds(T entity, Map<Class<?>, Long> parentIds, String operator) {
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
         Throwables.throwOnCondition(wrapper.isEmptyOfWhere()).illegalArgument();
         processEntityBeforeUpdate(entity, operator);
@@ -156,7 +177,7 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         mapper.delete(wrapper);
     }
 
-    public <V> void deleteByParentIds(Map<Class<V>, Long> parentIds, String operator) {
+    public void deleteByParentIds(Map<Class<?>, Long> parentIds, String operator) {
         T t = ReflectUtils.newInstance(entityType);
         processEntityBeforeDelete(t, operator);
         Wrapper<T> wrapper = QuaryUtils.generateByParentIdQueryWrapper(entityType, parentIds);
@@ -218,20 +239,20 @@ public class DefaultRepository<T extends AbstractPersistObject> {
         }
     }
 
-    public <V> void deleteByParentId(Class<V> parentClass, Long parentId, String operator) {
-        Map<Class<V>, Long> map = new HashMap<>();
+    public void deleteByParentId(Class<?> parentClass, Long parentId, String operator) {
+        Map<Class<?>, Long> map = new HashMap<>();
         map.put(parentClass, parentId);
         deleteByParentIds(map, operator);
     }
 
-    public <V> void updateByParentId(T entity, Class<V> parentClass, Long parentId, String operator) {
-        Map<Class<V>, Long> map = new HashMap<>();
+    public void updateByParentId(T entity, Class<?> parentClass, Long parentId, String operator) {
+        Map<Class<?>, Long> map = new HashMap<>();
         map.put(parentClass, parentId);
         updateByParentIds(entity, map, operator);
     }
 
     public <V> List<T> selectByParentId(Class<V> parentClass, Long parentId) {
-        Map<Class<V>, Long> map = new HashMap<>();
+        Map<Class<?>, Long> map = new HashMap<>();
         map.put(parentClass, parentId);
         return selectByParentIds(map);
     }

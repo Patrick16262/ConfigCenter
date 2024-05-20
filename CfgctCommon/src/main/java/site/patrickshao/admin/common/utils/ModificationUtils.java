@@ -4,6 +4,7 @@ import jakarta.annotation.Nullable;
 import site.patrickshao.admin.common.constants.OperationNames;
 import site.patrickshao.admin.common.entity.po.ItemPO;
 import site.patrickshao.admin.common.entity.po.ModificationPO;
+import site.patrickshao.admin.common.exception.IllegalDataRelationException;
 import site.patrickshao.admin.common.exception.http.Http400BadRequest;
 
 import javax.annotation.ParametersAreNonnullByDefault;
@@ -75,24 +76,7 @@ public class ModificationUtils {
         return null;
     }
 
-    @ParametersAreNonnullByDefault
-    public static Map<String, ModificationPO> mergeModificationWithMap(Map<String, ModificationPO> oldMap, Map<String, ModificationPO> newMap) {
-        HashMap<String, ModificationPO> resMap = new HashMap<>();
-        for (Map.Entry<String, ModificationPO> entry : oldMap.entrySet()) {
-            String key = entry.getKey();
-            ModificationPO old = entry.getValue();
-            ModificationPO newOne = newMap.get(key);
-            if (newOne == null) {
-                resMap.put(key, old);
-            } else {
-                ModificationPO merged = mergeModification(old, newOne);
-                Throwables.throwOnCondition(merged == null)
-                        .badDataRelation("Cannot merge modification. \n old: " + old + " \n new: " + newOne);
-                resMap.put(key, merged);
-            }
-        }
-        return resMap;
-    }
+
 
     @ParametersAreNullableByDefault
     public static Optional<ItemPO> applyModification(ItemPO item, ModificationPO modification) {
@@ -130,6 +114,41 @@ public class ModificationUtils {
             applyModification(item, modification).ifPresent(res::add);
         }
         return res;
+    }
+
+    @ParametersAreNonnullByDefault
+    public static List<ModificationPO> mergeModification(List<ModificationPO> oldList, List<ModificationPO> newList) {
+        var oldMap = oldList.stream().collect(Collectors.toMap(
+                ModificationPO::getKey,
+                i -> i,
+                (a, b) -> {
+                    throw new IllegalDataRelationException("" + a + b);
+                }));
+        var newMap = newList.stream().collect(Collectors.toMap(
+                ModificationPO::getKey,
+                i -> i,
+                (a, b) -> {
+                    throw new IllegalDataRelationException("" + a + b);
+                }));
+        return new ArrayList<>(mergeModificationWithMap(oldMap, newMap).values());
+    }
+
+    private static Map<String, ModificationPO> mergeModificationWithMap(Map<String, ModificationPO> oldMap, Map<String, ModificationPO> newMap) {
+        HashMap<String, ModificationPO> resMap = new HashMap<>();
+        for (Map.Entry<String, ModificationPO> entry : oldMap.entrySet()) {
+            String key = entry.getKey();
+            ModificationPO old = entry.getValue();
+            ModificationPO newOne = newMap.get(key);
+            if (newOne == null) {
+                resMap.put(key, old);
+            } else {
+                ModificationPO merged = mergeModification(old, newOne);
+                Throwables.throwOnCondition(merged == null)
+                        .badDataRelation("Cannot merge modification. \n old: " + old + " \n new: " + newOne);
+                resMap.put(key, merged);
+            }
+        }
+        return resMap;
     }
 
 }

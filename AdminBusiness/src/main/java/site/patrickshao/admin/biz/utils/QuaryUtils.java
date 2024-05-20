@@ -10,6 +10,7 @@ import site.patrickshao.admin.common.utils.ArrayUtils;
 import site.patrickshao.admin.common.utils.Throwables;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class QuaryUtils {
         return new QueryWrapper<T>().eq(columName, parentId);
     }
 
-    public static  <T, V> Wrapper<T> generateByParentIdQueryWrapper(Class<T> chidrenClass, Map<Class<V>, Long> parentIds) {
+    public static  <T, V> Wrapper<T> generateByParentIdQueryWrapper(Class<T> chidrenClass, Map<Class<?>, Long> parentIds) {
         Map<String, Field> map = getParentIdColumNames(chidrenClass);
         Map<String, Long> queryMap = new HashMap<>();
         QueryWrapper<T> wrapper = new QueryWrapper<T>();
@@ -46,7 +47,6 @@ public class QuaryUtils {
         return Arrays.stream(clazz.getDeclaredFields())
                 .filter(field -> field.getAnnotation(ParentId.class) != null)
                 .collect(Collectors.toMap(Field::getName, field -> field));
-
     }
 
 

@@ -54,8 +54,8 @@ public class ItemModificationService {
     @Transactional
     @PreAuthorize("Item#AddItem")
     public void createItemNotRelease(Long branchId, String key, String value, String operator) {
+        branchService.checkIfWorkspaceModifiable(branchId);
         BranchPO branchPO = branchRepository.selectById(branchId);
-        Throwables.validateRequest(branchPO != null, "Branch does not exist");
         ItemPO itemPO = getItemNotRelease(branchId, key);
         Throwables.validateRequest(itemPO != null, "Item already exists");
         ModificationPO modificationPO = new ModificationPO();
@@ -69,8 +69,8 @@ public class ItemModificationService {
     @Transactional
     @PreAuthorize("Item#EditItemKeyValue")
     public void updateItemKeyValueNotRelease(Long branchId, String key, String value, String operator) {
+        branchService.checkIfWorkspaceModifiable(branchId);
         BranchPO branchPO = branchRepository.selectById(branchId);
-        Throwables.validateRequest(branchPO != null, "Branch does not exist");
         ItemPO itemPO = getItemNotRelease(branchId, key);
         Throwables.validateRequest(itemPO != null, "Item does not exist");
         ModificationPO modificationPO = new ModificationPO();
@@ -84,8 +84,8 @@ public class ItemModificationService {
     @Transactional
     @PreAuthorize("Item#DeleteItem")
     public void deleteItemNotRelease(Long branchId, String key, String operator) {
+        branchService.checkIfWorkspaceModifiable(branchId);
         BranchPO branch = branchRepository.selectById(branchId);
-        Throwables.validateRequest(branch != null, "Invalid Branch Id");
         ItemPO curItem = getItemNotRelease(branchId, key);
         Throwables.validateRequest(curItem != null, "Item doesn't exist");
         ModificationPO modificationPO = new ModificationPO();

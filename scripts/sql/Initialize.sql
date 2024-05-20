@@ -42,20 +42,21 @@ SET @@FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE `Application`
 (
-    `ID`              int unsigned PRIMARY KEY AUTO_INCREMENT COMMENT '每张表的主键，int unsigned，自增',
+    `ID`               int unsigned PRIMARY KEY AUTO_INCREMENT COMMENT '每张表的主键，int unsigned，自增',
 
-    `ApplicationName` varchar(64) UNIQUE                                    NOT NULL COMMENT '应用名',
-    `NickName`        varchar(127) DEFAULT null                             NULL COMMENT '应用在界面上显示的名称',
-    `DeferredDelete`  boolean      DEFAULT false                            NOT NULL COMMENT '是否将要被删除',
-    `ToBeDeletedAt`   boolean      DEFAULT null                             NULL COMMENT '将于何时移除',
+    `ApplicationName`  varchar(64) UNIQUE                                    NOT NULL COMMENT '应用名',
+    `NickName`         varchar(127) DEFAULT null                             NULL COMMENT '应用在界面上显示的名称',
+    `DeferredDelete`   boolean      DEFAULT false                            NOT NULL COMMENT '是否将要被删除',
+    `ToBeDeletedAt`    boolean      DEFAULT null                             NULL COMMENT '将于何时移除',
+    `RequireAccessKey` boolean      DEFAULT false                            NOT NULL COMMENT '是否需要AccessKey',
 
-    `Comment`         text(65525)  DEFAULT null                             NULL COMMENT '备注',
-    `Deleted`         boolean      DEFAULT false                            NOT NULL COMMENT '是否被逻辑删除',
-    `DeletedAt`       timestamp    DEFAULT null                             NULL COMMENT '删除时间',
-    `CreatedBy`       varchar(127)                                          NOT NULL COMMENT '谁创建的',
-    `CreateTime`      timestamp    DEFAULT CURRENT_TIMESTAMP                NOT NULL COMMENT '创建时间',
-    `LastModifiedBy`  varchar(127) DEFAULT 'Not Modified'                   NOT NUll COMMENT '谁最后一次修改的',
-    `LastModifyTime`  timestamp    DEFAULT null ON UPDATE CURRENT_TIMESTAMP NULL COMMENT '修改时间'
+    `Comment`          text(65525)  DEFAULT null                             NULL COMMENT '备注',
+    `Deleted`          boolean      DEFAULT false                            NOT NULL COMMENT '是否被逻辑删除',
+    `DeletedAt`        timestamp    DEFAULT null                             NULL COMMENT '删除时间',
+    `CreatedBy`        varchar(127)                                          NOT NULL COMMENT '谁创建的',
+    `CreateTime`       timestamp    DEFAULT CURRENT_TIMESTAMP                NOT NULL COMMENT '创建时间',
+    `LastModifiedBy`   varchar(127) DEFAULT 'Not Modified'                   NOT NUll COMMENT '谁最后一次修改的',
+    `LastModifyTime`   timestamp    DEFAULT null ON UPDATE CURRENT_TIMESTAMP NULL COMMENT '修改时间'
 ) DEFAULT CHARSET = utf8mb4 COMMENT '应用';
 
 CREATE INDEX `DeleteAndApplicationNameIndex` ON `Application` (Deleted, ApplicationName);
@@ -1147,18 +1148,18 @@ VALUES ((SELECT ID FROM Action WHERE ActionName = 'Application#Visible'),
         (SELECT ID FROM Permission WHERE PermissionName = 'ServerAuthorization'), 'System'),
        ((SELECT ID FROM Action WHERE ActionName = 'Permission#EditAssginRequirement'),
         (SELECT ID FROM Permission WHERE PermissionName = 'ServerAuthorization'), 'System'),
-           #第一次修改2024年4月10日
+       #第一次修改2024年4月10日
        ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchName'),
         (SELECT ID FROM Permission WHERE PermissionName = 'ApplicationVisit'), 'System'),
-           ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchName'),
+       ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchName'),
         (SELECT ID FROM Permission WHERE PermissionName = 'NamespaceVisit'), 'System'),
-           ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchName'),
+       ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchName'),
         (SELECT ID FROM Permission WHERE PermissionName = 'NamespaceEdit'), 'System'),
-           ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
+       ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
         (SELECT ID FROM Permission WHERE PermissionName = 'ApplicationVisit'), 'System'),
-           ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
+       ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
         (SELECT ID FROM Permission WHERE PermissionName = 'NamespaceVisit'), 'System'),
-           ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
+       ((SELECT ID FROM Action WHERE ActionName = 'Branch#EditBranchComment'),
         (SELECT ID FROM Permission WHERE PermissionName = 'NamespaceEdit'), 'System');
 
 

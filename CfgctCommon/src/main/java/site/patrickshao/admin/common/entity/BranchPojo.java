@@ -5,7 +5,8 @@ package site.patrickshao.admin.common.entity;
  * @description
  * @date 2024/4/14
  */
-public interface LinkablePojo extends PojoWithIdentifier{
+public interface BranchPojo extends PojoWithIdentifier{
     Long getPreviousId();
     Long getNextId();
+    Long getBranchId();
 }

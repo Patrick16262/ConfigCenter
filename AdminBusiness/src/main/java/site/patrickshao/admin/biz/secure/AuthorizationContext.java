@@ -6,8 +6,12 @@ import org.slf4j.LoggerFactory;
 import site.patrickshao.admin.biz.service.AuthorizationService;
 import site.patrickshao.admin.common.entity.bo.AuthorizationContextBO;
 import site.patrickshao.admin.common.entity.dto.SpecifiedUserDTO;
+import site.patrickshao.admin.common.entity.po.AccessTokenPO;
 
 /**
+ * 几乎所有业务类/控制器/鉴权授权类都会用到的一个类，用于存储当前请求的上下文信息
+ * 通过ThreadLocal实现
+ *
  * @author Shao Yibo
  * @description
  * @date 2024/4/11
@@ -81,6 +85,15 @@ public class AuthorizationContext {
     public static void setSpecifiedUserDTO(SpecifiedUserDTO specifiedUserDTO) {
         log.debug("set specified user dto: " + specifiedUserDTO);
         authorizationContext.get().setSpecifiedUserDTO(specifiedUserDTO);
+    }
+
+    public static AccessTokenPO getAuthorizationContextBO() {
+        return authorizationContext.get().getAccessTokenPO();
+    }
+
+    public static void setAccessTokenPO (AccessTokenPO accessTokenPO) {
+        log.debug("set access token po: " + accessTokenPO);
+        authorizationContext.get().setAccessTokenPO(accessTokenPO);
     }
 
     public static void destroy() {

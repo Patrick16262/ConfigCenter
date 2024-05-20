@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
+import site.patrickshao.admin.common.entity.BranchPojo;
 import site.patrickshao.admin.common.entity.HaveApplicationParent;
 import site.patrickshao.admin.common.entity.HaveNamespaceParent;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
  */
 @TableName("`Publish`")
 @GenerateRepository
-public class PublishPO extends AbstractBasicFieldsObject implements HaveApplicationParent, HaveNamespaceParent {
+public class PublishPO extends AbstractBasicFieldsObject implements HaveApplicationParent, HaveNamespaceParent, BranchPojo {
     @TableField("`name`")
     private String name;
     @ParentId
@@ -37,6 +38,7 @@ public class PublishPO extends AbstractBasicFieldsObject implements HaveApplicat
         this.name = name;
     }
 
+    @Override
     public Long getBranchId() {
         return branchId;
     }
@@ -61,6 +63,7 @@ public class PublishPO extends AbstractBasicFieldsObject implements HaveApplicat
         this.authorizer = authorizer;
     }
 
+    @Override
     public Long getPreviousId() {
         return previousId;
     }
@@ -69,6 +72,7 @@ public class PublishPO extends AbstractBasicFieldsObject implements HaveApplicat
         this.previousId = previousId;
     }
 
+    @Override
     public Long getNextId() {
         return nextId;
     }

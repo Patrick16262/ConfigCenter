@@ -2,6 +2,7 @@ package site.patrickshao.admin.common.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.validation.constraints.NotNull;
 import site.patrickshao.admin.common.annotation.GenerateRepository;
 import site.patrickshao.admin.common.annotation.ParentId;
 import site.patrickshao.admin.common.entity.HaveApplicationParent;
@@ -20,6 +21,7 @@ public class ModificationPO extends AbstractBasicFieldsObject implements HaveApp
     @TableField("`value`")
     private String value;
     @TableField("`key`")
+    @NotNull
     private String key;
     @TableField("`operation`")
     private String operation;

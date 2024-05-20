@@ -106,8 +106,6 @@ public class ClusterService {
         clusterRepository.updateById(clusterPO, AuthorizationContext.getUsername());
     }
 
-
-    @Transactional
     @NotForController
     public boolean isClusterNameUnique(Long applicationId, String clusterName) {
         return clusterRepository.selectByWrapper(
@@ -116,14 +114,12 @@ public class ClusterService {
                         .eq(DataBaseFields.Cluster.NAME, clusterName)).isEmpty();
     }
 
-    @Transactional
     @NotForController
     public void deleteCluster(Long clusterId, String operator) {
         branchService.deleteBranchByClusterId(clusterId, operator);
         clusterRepository.deleteById(clusterId, operator);
     }
 
-    @Transactional
     @NotForController
     public void deleteClusterByApplicationId(Long applicationId, String operator) {
         List<ClusterPO> clusters = clusterRepository.selectByParentId(applicationId);

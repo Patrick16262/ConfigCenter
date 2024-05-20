@@ -123,64 +123,23 @@ public class AuthorizationService {
                     //权限不符合
                     continue;
                 }
-                //已认证权限的application作用范围为全部，则该权限符合
-                if (authorized.getApplicationId() == null) {
-                    //权限符合
-                    break;
-                }
-                //操作不在具体的application对象内，则需求的权限application作用范围为全部
-                //但已认证权限的application作用范围为局部，则该权限符合不符合
-                if (applicationId == null) {
-                    //权限不符合
-                    continue;
-                }
-                //已认证权限作用的application范围为部分，但是需求权限作用范围是全都，则该权限符合不符合
-                if (!required.getSpecifyApplication()) {
-                    //权限不符合
-                    continue;
-                }
-                //已认证权限作用的application范围和需求权限作用范围不一致，则该权限符合不符合
-                if (!authorized.getApplicationId().equals(applicationId)) {
-                    //权限不符合
-                    continue;
-                }
-                //已认证权限的namespace作用范围为全部，则该权限符合
-                if (authorized.getNamespaceId() == null) {
-                    //权限符合
-                    break;
-                }
-                //操作不在具体的application对象内，则需求的权限application作用范围为全部
-                //但已认证权限的application作用范围为局部，则该权限符合不符合
-                if (namespaceId == null) {
-                    //权限不符合
-                    continue;
-                }
-                //已认证权限作用的namespace范围为部分，但是需求权限作用范围是全都，则该权限符合不符合
-                if (!required.getSpecifyNamespace()) {
-                    //权限不符合
-                    continue;
-                }
-                //已认证权限作用的namespace范围和需求权限作用范围不一致，则该权限符合不符合
-                if (!authorized.getNamespaceId().equals(applicationId)) {
-                    //权限不符合
-                    continue;
-                }
-                log.error("""
-                                Authorization exception
-                                Detail:
-                                class authorized = {}
-                                class required = {}
-                                Long applicationId = {}
-                                Long namespaceId = {}
-                                                                
-                                StackTrace:
-                                {}""",
-                        authorized,
-                        required,
-                        applicationId,
-                        namespaceId,
-                        new RuntimeException().getStackTrace()
-                );
+                break;
+//                log.error("""
+//                                Authorization exception
+//                                Detail:
+//                                class authorized = {}
+//                                class required = {}
+//                                Long applicationId = {}
+//                                Long namespaceId = {}
+//
+//                                StackTrace:
+//                                {}""",
+//                        authorized,
+//                        required,
+//                        applicationId,
+//                        namespaceId,
+//                        new RuntimeException().getStackTrace()
+//                );
             }
         }
         return true;

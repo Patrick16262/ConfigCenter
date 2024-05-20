@@ -21,6 +21,7 @@ public class ApplicationPO extends AbstractFullFieldsObject implements HaveAppli
     @NotNull
     private Boolean deferredDelete;
     private Date tobeDeletedAt;
+    private Boolean requireAccessKey;
 
     public String getApplicationName() {
         return applicationName;
@@ -54,18 +55,27 @@ public class ApplicationPO extends AbstractFullFieldsObject implements HaveAppli
         this.tobeDeletedAt = tobeDeletedAt;
     }
 
+    public Boolean getRequireAccessKey() {
+        return requireAccessKey;
+    }
+
+    public void setRequireAccessKey(Boolean requireAccessKey) {
+        this.requireAccessKey = requireAccessKey;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof ApplicationPO that)) return false;
         if (!super.equals(object)) return false;
-        return Objects.equals(applicationName, that.applicationName) && Objects.equals(nickName, that.nickName) && Objects.equals(deferredDelete, that.deferredDelete) && Objects.equals(tobeDeletedAt, that.tobeDeletedAt);
+        return Objects.equals(applicationName, that.applicationName) && Objects.equals(nickName, that.nickName) && Objects.equals(deferredDelete, that.deferredDelete) && Objects.equals(tobeDeletedAt, that.tobeDeletedAt) && Objects.equals(requireAccessKey, that.requireAccessKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), applicationName, nickName, deferredDelete, tobeDeletedAt);
+        return Objects.hash(super.hashCode(), applicationName, nickName, deferredDelete, tobeDeletedAt, requireAccessKey);
     }
+
 
     @Override
     public String toString() {
@@ -74,8 +84,11 @@ public class ApplicationPO extends AbstractFullFieldsObject implements HaveAppli
                 ", nickName='" + nickName + '\'' +
                 ", deferredDelete=" + deferredDelete +
                 ", tobeDeletedAt=" + tobeDeletedAt +
+                ", requireAccessKey=" + requireAccessKey +
                 "} " + super.toString();
     }
+
+
 
     /**
      * @return

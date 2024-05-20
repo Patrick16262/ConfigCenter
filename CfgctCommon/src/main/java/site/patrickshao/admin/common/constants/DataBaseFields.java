@@ -7,6 +7,10 @@ package site.patrickshao.admin.common.constants;
  */
 public interface DataBaseFields {
     String ID = "ID";
+    String LAST_MODIFIED_BY = "LastModifiedBy";
+    String LAST_MODIFY_TIME = "LastModifyTime";
+    String CREATE_TIME = "CreateTime";
+    String CREATED_BY = "CreatedBy";
 
     interface Action {
         String ACTION_NAME = "ActionName";

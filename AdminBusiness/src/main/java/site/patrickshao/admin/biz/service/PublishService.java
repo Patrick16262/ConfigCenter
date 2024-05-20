@@ -1,8 +1,10 @@
 package site.patrickshao.admin.biz.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.transaction.annotation.Transactional;
 import site.patrickshao.admin.biz.repository.DefaultRepository;
 import site.patrickshao.admin.common.annotation.NotForController;
+import site.patrickshao.admin.common.constants.DataBaseFields;
 import site.patrickshao.admin.common.entity.po.BranchPO;
 import site.patrickshao.admin.common.entity.po.ModificationPO;
 import site.patrickshao.admin.common.entity.po.PublishPO;
@@ -19,17 +21,11 @@ public class PublishService {
     private DefaultRepository<PublishPO> publishRepository;
     private DefaultRepository<ModificationPO> modificationRepository;
 
-    //getNeedApprovePublishList
-
     @Transactional
-    public void saveModification(Long publishId, ModificationPO po, String operator) {
-
-    }
-
-
-    @Transactional
-    @NotForController
-    public void saveModifications(Long publishId, Map<String, ModificationPO> map, String operator) {
+    public List<PublishPO> getNeedApprovePublishList(Long userId) {
+        return publishRepository.selectByWrapper(new QueryWrapper<PublishPO>()
+                .eq(DataBaseFields.Publish.AUTHORIZER, userId)
+                .eq(DataBaseFields.Publish.WORKSPACE, true));
     }
 
     @Transactional

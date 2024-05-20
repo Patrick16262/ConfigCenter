@@ -2,6 +2,7 @@ package site.patrickshao.admin.common.entity.bo;
 
 import site.patrickshao.admin.common.entity.PojoWithIdentifier;
 import site.patrickshao.admin.common.entity.dto.SpecifiedUserDTO;
+import site.patrickshao.admin.common.entity.po.AccessTokenPO;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -21,6 +22,7 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
     private Long targetNamespaceId;
     private String actionName;
     private SpecifiedUserDTO specifiedUserDTO;
+    private AccessTokenPO accessTokenPO;
 
     public Long getUserId() {
         return userId;
@@ -72,11 +74,24 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
         this.specifiedUserDTO = specifiedUserDTO;
     }
 
+    public void setAccessTokenPO(AccessTokenPO accessTokenPO) {
+        this.accessTokenPO = accessTokenPO;
+    }
+
+    public AccessTokenPO getAccessTokenPO() {
+        return accessTokenPO;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (!(object instanceof AuthorizationContextBO that)) return false;
         return Objects.equals(userId, that.userId) && Objects.equals(username, that.username) && Objects.equals(targetApplicationId, that.targetApplicationId) && Objects.equals(targetNamespaceId, that.targetNamespaceId) && Objects.equals(actionName, that.actionName) && Objects.equals(specifiedUserDTO, that.specifiedUserDTO);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, username, targetApplicationId, targetNamespaceId, actionName, specifiedUserDTO, accessTokenPO);
     }
 
     @Override
@@ -88,12 +103,8 @@ public class AuthorizationContextBO implements Serializable, PojoWithIdentifier 
                 ", targetNamespaceId=" + targetNamespaceId +
                 ", actionName='" + actionName + '\'' +
                 ", specifiedUserDTO=" + specifiedUserDTO +
+                ", accessTokenPO=" + accessTokenPO +
                 '}';
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, username, targetApplicationId, targetNamespaceId, actionName, specifiedUserDTO);
     }
 
     /**
